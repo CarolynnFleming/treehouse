@@ -15,10 +15,22 @@ export default function Login() {
   // the URL to redirect to after logging in.
   const { from } = location.state || { from: { pathname: '/' } };
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault();
-    const loginWasSuccessful = auth.login(formState.email, formState.password);
+    // const loginWasSuccessful = auth.login(formState.email, formState.password);
+    try {
+      const loginWasSuccessful = auth.login(formState.email, formState.password);
 
+     if(!loginWasSuccessful){
+       throw new Error('login unsuccessful!');
+     } else {
+    // const url = location.state.origin ? location.state.origin.pathname : '/';
+      history.replace(from);
+    }
+  } catch (error) {
+      setError(error.message);
+    }
+  
     // TODO: If login was unsuccessful, set an error with a message
     // to display to the user that their login failed.
     //
@@ -28,21 +40,26 @@ export default function Login() {
     // See https://v5.reactrouter.com/web/api/history for the appropriate method to use
   };
 
+
   return (
     <>
       <h3>You must log in to view the page at {from.pathname}</h3>
       <form onSubmit={handleLogin} className={styles.loginForm}>
-        <label>Email</label>
+        <label htmlFor="email">Email</label>
         <input
           id="email"
           name="email"
           type="email"
+          value={formState.email}
+          onChange={handleFormChange}
         />{' '}
-        <label>Password</label>
+        <label htmlFor="password">Password</label>
         <input
           id="password"
           name="password"
           type="password"
+          value={formState.password}
+          onChange={handleFormChange}
         />
         <button type="submit" aria-label="Sign In">
           Sign in
